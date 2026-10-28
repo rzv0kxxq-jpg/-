@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>선캄브리아시대의 환경과 생물</title>
+    <style>
+        :root {
+            --bg-color: #0b0f19;
+            --panel-bg: rgba(18, 24, 38, 0.85);
+            --text-color: #f3f4f6;
+            --accent-color: #38bdf8;
+            --accent-warm: #f43f5e;
+            --accent-cold: #3b82f6;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+        header {
+            text-align: center;
+            padding: 40px 20px 20px;
+            background: linear-gradient(to bottom, #1e1b4b, var(--bg-color));
+        }
+        header h1 { font-size: 2.5rem; margin-bottom: 10px; color: #a5f3fc; }
+        header p { color: #94a3b8; font-size: 1.1rem; }
+
+        /* 상단 슬라이더 컨트롤러 */
+        .slider-container {
+            max-width: 800px;
+            margin: 20px auto;
+            background: var(--panel-bg);
+            padding: 20px;
+            border-radius: 15px;
+            border: 1px solid rgba(56, 189, 248, 0.2);
+            text-align: center;
+        }
+        .slider-container input[type=range] {
+            width: 100%;
+            margin: 15px 0;
+            accent-color: var(--accent-color);
+            cursor: pointer;
+        }
+        .era-display {
+            font-size: 1.3rem;
+            font-weight: bold;
+            color: var(--accent-color);
+        }
+
+        /* 메인 컨테이너 레이아웃 */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 25px;
+        }
+        @media(max-width: 900px) {
+            .container { grid-template-columns: 1fr; }
+        }
+
+        .card {
+            background: var(--panel-bg);
+            border-radius: 16px;
+            padding: 25px;
+            border: 1px solid rgba(255,255,255,0.08);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            transition: transform 0.3s;
+        }
+        .card:hover { transform: translateY(-3px); }
+        .card h3 {
+            font-size: 1.4rem;
+            margin-bottom: 15px;
+            color: #38bdf8;
+            border-bottom: 2px solid rgba(56, 189, 248, 0.3);
+            padding-bottom: 8px;
+        }
+        .card p {
+            font-size: 0.95rem;
+            color: #cbd5e1;
+            margin-bottom: 20px;
+            max-height: 4.5rem; /* 최대 3~4줄 분량 제한 */
+            overflow-y: auto;
+        }
+
+        /* 시각화 영역 */
+        .visual-box {
+            width: 100%;
+            height: 250px;
+            background: #020617;
+            border-radius: 10px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            overflow: hidden;
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+
+        /* 인터랙티브 버튼 */
+        .btn-group {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 10px;
+            justify-content: center;
+        }
+        button {
+            background: #0369a1;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background 0.2s;
+        }
+        button:hover { background: #0284c7; }
+
+        /* 푸터 및 출처 */
+        footer {
+            max-width: 1200px;
+            margin: 40px auto 20px;
+            padding: 25px;
+            background: var(--panel-bg);
+            border-radius: 12px;
+            font-size: 0.9rem;
+            color: #94a3b8;
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+        footer h4 { color: #f1f5f9; margin-bottom: 10px; }
+        footer ul { padding-left: 20px; margin-bottom: 15px; }
+
+        /* SVG 애니메이션 및 스타일용 클래스 */
+        .pulsate { animation: pulse 2s infinite; }
+        @keyframes pulse { 0% { opacity: 0.6; } 50% { opacity: 1; } 100% { opacity: 0.6; } }
+        
+        .swim { animation: swimMotion 4s ease-in-out infinite alternate; }
+        @keyframes swimMotion {
+            0% { transform: translateX(-20px) translateY(0) rotate(-5deg); }
+            100% { transform: translateX(20px) translateY(-10px) rotate(5deg); }
+        }
+
+        .grow { animation: growMotion 3s ease-in-out infinite alternate; }
+        @keyframes growMotion {
+            0% { transform: scaleY(0.5); transform-origin: bottom; }
+            100% { transform: scaleY(1); transform-origin: bottom; }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>선캄브리아시대의 환경과 생물</h1>
+        <p>고등학교 통합과학 시각 자료 웹페이지</p>
+    </header>
+
+    <!-- 슬라이더 컨트롤러 (시간 흐름에 따른 변화 체험) -->
+    <div class="slider-container">
+        <label for="timeSlider"><strong>시대 흐름 탐색 슬라이더 (지구 탄생 ~ 말기)</strong></label>
+        <input type="range" id="timeSlider" min="0" max="100" value="50">
+        <div class="era-display" id="eraText">선캄브리아시대 중기 환경</div>
+    </div>
+
+    <div class="container">
+
+        <!-- ① 시대 구분 -->
+        <div class="card">
+            <div>
+                <h3>① 시대 구분</h3>
+                <p>시작·종료 시기: 약 46억년전에 시작해서 약 5억 4100만년전에 끝났다. 전체 지질시대의 약 88%를 차지한다. 지구의 탄생, 최초의 생물 출현, 대기권과 수권의 형성 등 지각변동과 생물의 진화단계를 기준으로 크게 구분한다.</p>
+            </div>
+            <div class="visual-box" id="pieContainer">
+                <!-- 원그래프 SVG: 전체 88% 표현 -->
+                <svg width="200" height="200" viewBox="0 0 100 100">
+                    <circle cx="50" cy="50" r="40" fill="none" stroke="#1e293b" stroke-width="14"/>
+                    <circle cx="50" cy="50" r="40" fill="none" stroke="#38bdf8" stroke-width="14"
+                            stroke-dasharray="251.2" stroke-dashoffset="30.1" transform="rotate(-90 50 50)"/>
+                    <text x="50" y="48" text-anchor="middle" fill="#f3f4f6" font-size="12" font-weight="bold">선캄브리아</text>
+                    <text x="50" y="62" text-anchor="middle" fill="#38bdf8" font-size="10">88%</text>
+                </svg>
+            </div>
+        </div>
+
+        <!-- ② 기후 -->
+        <div class="card" id="climateCard" style="transition: background 0.5s;">
+            <div>
+                <h3>② 기후</h3>
+                <p>전반적인 기후는 온난한 기후와 빙하기가 번갈아 나타났다. 선캄브리아 시대 말기 등 지구적인 빙하시대가 있었던 것으로 알려져 있다.</p>
+            </div>
+            <div class="visual-box" id="climateVisualBox">
+                <!-- 기후 상태 표현 SVG (온난/빙하) -->
+                <svg width="100%" height="100%" viewBox="0 0 300 200">
+                    <defs>
+                        <linearGradient id="warmGrad" x1="0" y1="0" x2="0" y2="1">
+                            <stop offset="0%" stop-color="#f97316"/>
+                            <stop offset="100%" stop-color="#fef08a"/>
+                        </linearGradient>
+                        <linearGradient id="coldGrad" x1="0" y1="0" x2="0" y2="1">
+                            <stop offset="0%" stop-color="#1e3a8a"/>
+                            <stop offset="100%" stop-color="#93c5fd"/>
+                        </linearGradient>
+                    </defs>
+                    <rect id="climateBg" x="0" y="0" width="300" height="200" fill="url(#warmGrad)" rx="8"/>
+                    <!-- 태양 또는 눈송이 아이콘 -->
+                    <g id="climateIcon">
+                        <circle cx="150" cy="100" r="40" fill="#fde047" class="pulsate"/>
+                    </g>
+                    <text x="150" y="180" text-anchor="middle" fill="#0f172a" font-weight="bold" id="climateLabel">온난한 기후 시기</text>
+                </svg>
+            </div>
+        </div>
+
+        <!-- ③ 대기·해양 환경 -->
+        <div class="card">
+            <div>
+                <h3>③ 대기·해양 환경</h3>
+                <p>지구 탄생 직후 대기는 이산화탄소와 메탄 등이 주성분이었고 산소는 거의 없었다. 24억 년 전 산소가 처음 상승했고, 8억 년 전부터 급증하여 캄브리아 생물 대폭발의 기반이 되었다. 바다는 넓게 발달했으며 초기에는 산소가 부족했으나 광합성 생물로 점차 증가했다.</p>
+            </div>
+            <div class="visual-box">
+                <!-- 바다 단면 및 해수면 SVG -->
+                <svg width="100%" height="100%" viewBox="0 0 300 200">
+                    <rect x="0" y="0" width="300" height="70" fill="#1e293b"/>
+                    <text x="20" y="45" fill="#94a3b8" font-size="12">초기 대기 (CO₂, 메탄)</text>
+                    <!-- 해수면 라인 -->
+                    <path d="M0 70 Q 75 60, 150 70 T 300 70 V 200 H 0 Z" fill="#0284c7" opacity="0.8"/>
+                    <text x="20" y="110" fill="#e0f2fe" font-size="12">해수면 (광합성으로 산소 증가)</text>
+                    <!-- 바닷속 기포 애니메이션 -->
+                    <circle cx="80" cy="140" r="4" fill="#bae6fd" class="pulsate"/>
+                    <circle cx="180" cy="160" r="6" fill="#bae6fd" class="pulsate"/>
+                    <circle cx="230" cy="120" r="3" fill="#bae6fd" class="pulsate"/>
+                </svg>
+            </div>
+        </div>
+
+        <!-- ④ 수륙 분포 -->
+        <div class="card">
+            <div>
+                <h3>④ 수륙 분포</h3>
+                <p>여러 대륙 조각이 형성되고 이동·충돌하여 초대륙이 만들어지기도 했으며, 이후 다시 분리되었다. 대륙의 이동과 충돌에 따른 조산운동과 화산 활동이 활발하여 오래된 산맥과 대륙 지각이 형성되었다.</p>
+            </div>
+            <div>
+                <div class="btn-group">
+                    <button onclick="splitContinents()">대륙 분리</button>
+                    <button onclick="mergeContinents()">초대륙 결합</button>
+                </div>
+                <div class="visual-box">
+                    <svg width="100%" height="100%" viewBox="0 0 300 200" id="continentSvg">
+                        <rect width="300" height="200" fill="#0f172a" rx="8"/>
+                        <!-- 대륙 조각들 -->
+                        <g id="cont1" transform="translate(0, 0)" style="transition: transform 1s;">
+                            <path d="M 60 60 Q 90 40, 120 70 T 90 120 Z" fill="#10b981"/>
+                        </g>
+                        <g id="cont2" transform="translate(0, 0)" style="transition: transform 1s;">
+                            <path d="M 180 110 Q 220 90, 240 140 T 170 160 Z" fill="#059669"/>
+                        </g>
+                    </svg>
+                </div>
+            </div>
+        </div>
+
+        <!-- ⑤ 대표 동물 -->
+        <div class="card">
+            <div>
+                <h3>⑤ 대표 동물 (에디아카라 생물군)</h3>
+                <p>디킨소니아(Dickinsonia): 몸이 납작하고 타원형이며 마디가 있다. 해저에 붙어 살았으며 미생물 매트를 먹이로 삼았다. 스프리기나, 요르기아 등과 함께 선캄브리아시대 말기 바다 밑바닥에서 살았던 대표적인 해양생물이다.</p>
+            </div>
+            <div class="visual-box">
+                <!-- 디킨소니아 SVG 및 헤엄치는 애니메이션 -->
+                <svg width="100%" height="100%" viewBox="0 0 300 200">
+                    <rect width="300" height="200" fill="#082f49" rx="8"/>
+                    <!-- 해저 지형 -->
+                    <path d="M 0 170 Q 150 150, 300 170 V 200 H 0 Z" fill="#0369a1"/>
+                    <!-- 디킨소니아 본체 -->
+                    <g class="swim" transform="translate(100, 90)">
+                        <ellipse cx="50" cy="25" rx="45" ry="20" fill="#d97706"/>
+                        <!-- 마디 무늬 -->
+                        <line x1="20" y1="25" x2="80" y2="25" stroke="#78350f" stroke-width="3"/>
+                        <line x1="30" y1="18" x2="30" y2="32" stroke="#78350f" stroke-width="2"/>
+                        <line x1="50" y1="12" x2="50" y2="38" stroke="#78350f" stroke-width="2"/>
+                        <line x1="70" y1="18" x2="70" y2="32" stroke="#78350f" stroke-width="2"/>
+                    </g>
+                    <text x="150" y="30" text-anchor="middle" fill="#7dd3fc" font-size="12">디킨소니아 (타원형 마디 구조)</text>
+                </svg>
+            </div>
+        </div>
+
+        <!-- ⑥ 대표 식물 -->
+        <div class="card">
+            <div>
+                <h3>⑥ 대표 식물</h3>
+                <p>선캄브리아시대에는 육상 식물이 <strong>없었다</strong>. 이후 고생대 이후에야 육상 식물이 등장하게 되므로, 선캄브리아시대에는 거대한 육상 식물이나 숲의 형태를 찾아볼 수 없었다.</p>
+            </div>
+            <div class="visual-box">
+                <svg width="100%" height="100%" viewBox="0 0 300 200">
+                    <rect width="300" height="200" fill="#18181b" rx="8"/>
+                    <path d="M 0 160 Q 150 160, 300 160" stroke="#3f3f46" stroke-width="4"/>
+                    <!-- 식물 없음 표시 아이콘 및 빈 화면 애니메이션 -->
+                    <g transform="translate(150, 90)">
+                        <circle cx="0" cy="0" r="30" fill="none" stroke="#ef4444" stroke-width="4"/>
+                        <line x1="-20" y1="-20" x2="20" y2="20" stroke="#ef4444" stroke-width="4"/>
+                    </g>
+                    <text x="150" y="140" text-anchor="middle" fill="#a1a1aa" font-size="13">육상 식물 존재하지 않음</text>
+                </svg>
+            </div>
+        </div>
+
+        <!-- ⑦ 표준화석 -->
+        <div class="card">
+            <div>
+                <h3>⑦ 표준화석 (스트로마톨라이트)</h3>
+                <p>남조류(시아노박테리아)가 만든 층상 퇴적 구조물로 선캄브리아 전 기간에 걸쳐 나타난다. 생존 기간이 넓지만 특정 환경과 시대를 연구하는 데 중요한 정보를 주며, 선캄브리아 후기에 광합성 생물과 다세포 생물 출현의 증거가 된다.</p>
+            </div>
+            <div class="visual-box">
+                <!-- 지층 단면과 스트로마톨라이트 위치 SVG -->
+                <svg width="100%" height="100%" viewBox="0 0 300 200">
+                    <rect width="300" height="200" fill="#1e1b4b" rx="8"/>
+                    <!-- 지층 레이어 -->
+                    <rect x="40" y="30" width="220" height="30" fill="#312e81"/>
+                    <rect x="40" y="65" width="220" height="30" fill="#4338ca" stroke="#38bdf8" stroke-dasharray="4"/>
+                    <text x="150" y="85" text-anchor="middle" fill="#bae6fd" font-size="11">스트로마톨라이트 화석층</text>
+                    <rect x="40" y="100" width="220" height="50" fill="#3730a3"/>
+                    <text x="150" y="130" text-anchor="middle" fill="#cbd5e1" font-size="12">하부 퇴적층</text>
+                </svg>
+            </div>
+        </div>
+
+        <!-- ⑧ 시대 말 사건 -->
+        <div class="card">
+            <div>
+                <h3>⑧ 시대 말 사건 (대산소화 사건)</h3>
+                <p>선캄브리아시대 말기에는 대산소화 사건이 발생하여 산소에 적응하지 못한 혐기성 미생물들이 대거 멸종하는 사건이 일어났다. 광합성 생물의 폭발적 증가가 대기와 해양 환경을 완전히 바꾸어 놓았다.</p>
+            </div>
+            <div class="visual-box">
+                <!-- 대산소화 사건 및 혐기성 미생물 멸종 표현 SVG -->
+                <svg width="100%" height="100%" viewBox="0 0 300 200">
+                    <rect width="300" height="200" fill="#450a0a" rx="8"/>
+                    <!-- 산소 분자(O2) 확산 및 미생물 퇴조 애니메이션 -->
+                    <g class="pulsate">
+                        <circle cx="70" cy="60" r="12" fill="#38bdf8" opacity="0.8"/>
+                        <text x="70" y="64" text-anchor="middle" fill="#0f172a" font-size="10" font-weight="bold">O₂</text>
+                        <circle cx="220" cy="80" r="12" fill="#38bdf8" opacity="0.8"/>
+                        <text x="220" y="84" text-anchor="middle" fill="#0f172a" font-size="10" font-weight="bold">O₂</text>
+                    </g>
+                    <!-- 멸종하는 혐기성 세균 표시 -->
+                    <g transform="translate(150, 130)">
+                        <path d="M-20 -10 Q 0 -30, 20 -10 T 20 10 T -20 10 Z" fill="#ef4444" opacity="0.7"/>
+                        <text x="0" y="35" text-anchor="middle" fill="#fca5a5" font-size="12">혐기성 미생물 멸종 위기</text>
+                    </g>
+                </svg>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- 참고 자료 및 만든 사람 정보 -->
+    <footer>
+        <h4>참고 자료</h4>
+        <ul>
+            <li>미래엔 통합과학 2 교과서, 한국지질자원연구원 지질사 정보</li>
+            <li>미래엔 통합과학2 교과서, DBpia AI</li>
+            <li>출처: 태백 고생대 자연사 박물관, Science, Nature Communications, PubMed</li>
+            <li>문화재청 국가문화유산포털 - "옹진 소청도 선캄브리아 스트로마톨라이트와 분바위" (천연기념물 지정 자료)</li>
+        </ul>
+        <h4>만든 사람</h4>
+        <p>df / df</p>
+    </footer>
+
+    <script>
+        // 슬라이더 인터랙션 구현
+        const timeSlider = document.getElementById('timeSlider');
+        const eraText = document.getElementById('eraText');
+        const climateCard = document.getElementById('climateCard');
+        const climateBg = document.getElementById('climateBg');
+        const climateIcon = document.getElementById('climateIcon');
+        const climateLabel = document.getElementById('climateLabel');
+
+        timeSlider.addEventListener('input', (e) => {
+            const val = e.target.value;
+            if(val < 33) {
+                eraText.textContent = "선캄브리아시대 초기 (시생누대 - 높은 이산화탄소, 고온)";
+                climateBg.setAttribute("fill", "url(#warmGrad)");
+                climateIcon.innerHTML = '<circle cx="150" cy="100" r="40" fill="#fde047" class="pulsate"/>';
+                climateLabel.textContent = "초기 온난·고온 기후";
+            } else if(val < 66) {
+                eraText.textContent = "선캄브리아시대 중기 (원생누대 - 대기 산소 점진적 증가)";
+                climateBg.setAttribute("fill", "#0369a1");
+                climateIcon.innerHTML = '<circle cx="150" cy="100" r="30" fill="#38bdf8" class="pulsate"/>';
+                climateLabel.textContent = "산소 농도 정체 및 완만한 변화";
+            } else {
+                eraText.textContent = "선캄브리아시대 말기 (대산소화 사건 및 지구적 빙하기)";
+                climateBg.setAttribute("fill", "url(#coldGrad)");
+                climateIcon.innerHTML = '<polygon points="150,60 160,90 190,100 160,110 150,140 140,110 110,100 140,90" fill="#93c5fd" class="pulsate"/>';
+                climateLabel.textContent = "말기 빙하기 및 대산소화 사건";
+            }
+        });
+
+        // 대륙 이동 애니메이션 함수 (수륙 분포 버튼 연동)
+        function splitContinents() {
+            document.getElementById('cont1').style.transform = "translate(-30px, -15px) rotate(-10deg)";
+            document.getElementById('cont2').style.transform = "translate(40px, 20px) rotate(15deg)";
+        }
+
+        function mergeContinents() {
+            document.getElementById('cont1').style.transform = "translate(15px, 5px) rotate(0deg)";
+            document.getElementById('cont2').style.transform = "translate(-15px, -5px) rotate(0deg)";
+        }
+    </script>
+</body>
+</html>
